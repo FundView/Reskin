@@ -1,0 +1,133 @@
+// NDepend CQLinq Ruleset (Architecture-Only)
+// Concrete naming patterns derived from GL/AP projects.
+
+// ------------------------------------------------------------
+// Assembly sets (derived from GL/AP naming patterns)
+// ------------------------------------------------------------
+let LegacyMvc = Application.Assemblies.Where(a =>
+    a.NameLike("FundView.MVC4.UI*"));
+
+let AccountsPayableAssemblies = Application.Assemblies.Where(a =>
+    a.NameLike("Fast.FundView.AccountsPayable.*"));
+
+let GeneralLedgerAssemblies = Application.Assemblies.Where(a =>
+    a.NameLike("Fast.FundView.GeneralLedger.*") ||
+    a.NameLike("FastSoftware.FundView.GeneralLedger*"));
+
+let ModuleAssemblies = Application.Assemblies.Where(a =>
+    a.NameLike("Fast.FundView.*") &&
+    !a.NameLike("Fast.FundView.Common.*") &&
+    !a.NameLike("Fast.FundView.Core.*") &&
+    !a.NameLike("Fast.FundView.Unified.*"));
+
+let SharedAssemblies = Application.Assemblies.Where(a =>
+    a.NameLike("Fast.FundView.Common.*") ||
+    a.NameLike("Fast.FundView.Core.*") ||
+    a.NameLike("Fast.FundView.Unified.*"));
+
+// Core assemblies: domain and model-focused layers
+let CoreAssemblies = Application.Assemblies.Where(a =>
+    a.NameLike("Fast.FundView.*.Domain") ||
+    a.NameLike("Fast.FundView.*.Entities") ||
+    a.NameLike("Fast.FundView.*.ViewModels") ||
+    a.NameLike("Fast.FundView.*.Expressions") ||
+    a.NameLike("Fast.FundView.*.Interfaces") ||
+    a.NameLike("Fast.FundView.*.Abstractions"));
+
+// Adapter assemblies: data access, services, reporting, API/controller layers
+let AdapterAssemblies = Application.Assemblies.Where(a =>
+    a.NameLike("Fast.FundView.*.Services") ||
+    a.NameLike("Fast.FundView.*.Repositories") ||
+    a.NameLike("Fast.FundView.*.Contexts") ||
+    a.NameLike("Fast.FundView.*.Data") ||
+    a.NameLike("Fast.FundView.*.EFCore") ||
+    a.NameLike("Fast.FundView.*.Entities.EFCore") ||
+    a.NameLike("Fast.FundView.*.TelerikReports*") ||
+    a.NameLike("Fast.FundView.*.Api") ||
+    a.NameLike("Fast.FundView.*.PostingApi*") ||
+    a.NameLike("Fast.FundView.*.Controllers") ||
+    a.NameLike("Fast.FundView.*.Mappers") ||
+    a.NameLike("Fast.FundView.*.Factories") ||
+    a.NameLike("Fast.FundView.*.Providers"));
+
+// ------------------------------------------------------------
+// Rule: No assembly cycles
+// ------------------------------------------------------------
+warnif count > 0
+from a in Application.Assemblies
+where a.IsInCycle
+select new { a, a.CycleGroup };
+
+// ------------------------------------------------------------
+// Rule: No namespace cycles
+// ------------------------------------------------------------
+warnif count > 0
+from n in Application.Namespaces
+where n.IsInCycle
+select new { n, n.CycleGroup };
+
+// ------------------------------------------------------------
+// Rule: Layering (UI -> Adapters -> Core)
+// ------------------------------------------------------------
+// Core must not depend on Adapters or Legacy MVC
+warnif count > 0
+from a in CoreAssemblies
+where a.DependsOnAny(AdapterAssemblies.Concat(LegacyMvc))
+select new { a, Forbidden = a.Dependencies.Where(d => d.IsIn(AdapterAssemblies.Concat(LegacyMvc))) };
+
+// Adapters must not depend on Legacy MVC
+warnif count > 0
+from a in AdapterAssemblies
+where a.DependsOnAny(LegacyMvc)
+select new { a, Forbidden = a.Dependencies.Where(d => d.IsIn(LegacyMvc)) };
+
+// ------------------------------------------------------------
+// Rule: Module boundary (modules depend on shared abstractions only)
+// ------------------------------------------------------------
+warnif count > 0
+from a in ModuleAssemblies
+let modulePrefix = a.Name.Split('.').Take(3).ToList().Aggregate((x, y) => x + "." + y)
+let outside = ModuleAssemblies.Where(b => !b.Name.StartsWith(modulePrefix) && !b.IsIn(SharedAssemblies))
+where a.DependsOnAny(outside)
+select new { a, Forbidden = a.Dependencies.Where(d => d.IsIn(outside)) };
+
+// ------------------------------------------------------------
+// Rule: Core purity (no UI, EF, or reporting in Core)
+// ------------------------------------------------------------
+let ForbiddenCore = Application.Assemblies.Where(a =>
+    a.NameLike("System.Web") ||
+    a.NameLike("EntityFramework") ||
+    a.NameLike("Microsoft.EntityFrameworkCore") ||
+    a.NameLike("Telerik.*") ||
+    a.NameLike("FundView.MVC4.UI*"));
+
+warnif count > 0
+from a in CoreAssemblies
+where a.DependsOnAny(ForbiddenCore)
+select new { a, Forbidden = a.Dependencies.Where(d => d.IsIn(ForbiddenCore)) };
+
+// ------------------------------------------------------------
+// Rule: No Legacy MVC referenced by non-UI assemblies
+// ------------------------------------------------------------
+warnif count > 0
+from a in Application.Assemblies
+where !a.IsIn(LegacyMvc) && a.DependsOnAny(LegacyMvc)
+select new { a };
+
+// ------------------------------------------------------------
+// Rule: HttpContext.Current usage confined to Legacy MVC adapters
+// ------------------------------------------------------------
+let HttpContextType = Application.Types.WithFullName("System.Web.HttpContext").FirstOrDefault();
+
+warnif count > 0
+from t in Application.Types
+where HttpContextType != null
+   && t.IsUsing(HttpContextType)
+   && !t.ParentAssembly.IsIn(LegacyMvc)
+select new { t, t.ParentAssembly };
+
+// ------------------------------------------------------------
+// Notes
+// - AccountsPayableAssemblies and GeneralLedgerAssemblies are defined for
+//   future module-specific rules if needed.
+// - Code-quality rules remain report-only during reskin.

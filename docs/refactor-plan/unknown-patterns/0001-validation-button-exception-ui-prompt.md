@@ -1,0 +1,47 @@
+# 0001 - ValidationButtonException UI Prompt/Redirect
+
+- Pattern label: ValidationButtonException-driven UI confirmation/redirect flow.
+- Service/controller: `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/LegacySetupRedirector.cs`.
+- Difference summary (vs known playbooks): not a static MVC service shim; uses DI and throws `ValidationButtonException` with serialized buttons to drive UI flow and redirects; relies on `ILegacyGridHelper` + `URLNameHelper`; appears in services, controllers, model view-data, and validators (cross-cutting UI control via exception).
+- Search results (other occurrences, paths): 35 files in FundViewGit.
+- Candidate solutions (core boundary, adapter shape, tests):
+- Keep `ValidationButtonException` creation in MVC adapter only; core returns a `ValidationPrompt` DTO (message + buttons) that the legacy adapter converts to exception and the new service converts to a client response.
+- Centralize prompt creation in a shared helper/factory so message + button URLs are consistent; avoid duplicating prompt logic in core.
+- Add characterization tests that assert exception message and button payloads for each prompt scenario before refactor.
+
+Search results list
+- `FundViewGit/Fast.FundView.AccountsPayable.Services/APInvoiceService.cs`
+- `FundViewGit/Fast.FundView.AccountsPayable.Services/LegacyApInvoiceSavingValidator.cs`
+- `FundViewGit/Fast.FundView.GeneralLedger.Services/GLWorkingBudgetGroups/GLWorkingBudgetGroupService.cs`
+- `FundViewGit/Fast.FundView.GeneralLedger.Services/GLLedgerEntries/GLLedgerEntryService.cs`
+- `FundViewGit/Fast.FundView.GeneralLedger.Services/GLBudgetAdjustments/GLBudgetAdjustmentService.cs`
+- `FundViewGit/Fast.FundView.Legacy/Misc/ValidationButtonException.cs`
+- `FundViewGit/FundView.MVC4.UI/Controllers/ErrorController.cs`
+- `FundViewGit/FundView.MVC4.UI/EFModel/Validation/CourtVehicleValidator.cs`
+- `FundViewGit/FundView.MVC4.UI/EFModel/Validation/CourtPersonValidator.cs`
+- `FundViewGit/FundView.MVC4.UI/Libraries/Helpers/MunicipalCourtHelper.cs`
+- `FundViewGit/FundView.MVC4.UI/EFModel/Helpers/PrintDocumentHelper.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtVehicleService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtPaymentPlanService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtMergePersonService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtMergeOfficerService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCitationService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCaseManagementService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemPropertyService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemMergePropertyService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemDocumentSignatureRequestService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemBankStatementItemService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/LegacySetupRedirector.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Controllers/CourtViolationController.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationViolationMainViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Controllers/CourtOCAGroupController.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Controllers/CEViolationController.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Controllers/CECaseController.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPProjectPermitService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitEditTakeAPaymentViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/AccountsPayable/Services/LegacyInvalidInvoiceBatchWarningHandler.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/AccountsPayable/Services/APInvoiceService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Services/GLWorkingBudgetGroupService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Services/GLLedgerEntryService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Services/GLBudgetAdjustmentService.cs`

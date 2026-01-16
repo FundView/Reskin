@@ -1,0 +1,107 @@
+# Unknown Patterns Register
+
+Purpose
+- Record patterns that do not match GL/AP playbooks.
+- Capture differences, search results across FundViewGit, and candidate solutions.
+- Keep entries small and linkable for review.
+
+Naming
+- Use `0001-<short-name>.md`, `0002-<short-name>.md`, etc.
+- One pattern per file.
+
+Entry template
+- Pattern label:
+- Service/controller:
+- Difference summary (vs known playbooks):
+- Search results (other occurrences, paths):
+- Candidate solutions (core boundary, adapter shape, tests):
+
+Index
+- 0001 - ValidationButtonException UI prompt/redirect
+- 0002 - MVC Service direct Repo calls (no helper service)
+- 0003 - ViewData models performing repo queries
+- 0004 - MVC Helpers/Tools with direct repo access (bypass service shims)
+- 0005 - MVC Controllers with direct repo access (report workflows)
+- 0006 - EFModel validators mixing repo access + UI exceptions
+- 0007 - Sync-over-async blocking calls
+- 0008 - Service layer HttpContext.Current dependencies
+- 0009 - FundViewReadModel creation outside DI
+- 0010 - Hard-coded file system paths and direct IO
+- 0011 - Direct ConfigurationManager access
+- 0012 - Fire-and-forget logging tasks
+- 0013 - Direct SMTP email sending
+- 0014 - Direct HTTP client calls in services/helpers
+- 0015 - Custom TLS certificate validation overrides
+- 0016 - Web root file access via Server.MapPath
+- 0017 - Sequence number generation with process-scoped locks
+- 0018 - Shell command execution via cmd.exe
+- 0019 - Runtime assembly loading for reflection registries
+- 0020 - Task.Run async wrappers in repos/helpers
+- 0021 - Hard-coded credentials in code
+- 0022 - Word interop DocX-to-PDF conversion
+- 0023 - Repositories returning HTML markup / UI actions
+- 0024 - Dynamic SQL string concatenation in helpers/repos
+- 0025 - Direct time/guid usage (no abstraction)
+- 0026 - Recursive file delete retry with Thread.Sleep
+- 0027 - Legacy crypto (MD5 + TripleDES ECB)
+- 0028 - GDI+ image processing in helpers/services (System.Drawing)
+- 0029 - DataProtection key export to local disk
+- 0030 - PDF watermarking/merge via PdfSharp in MVC helpers
+- 0031 - DocX template generation/merge via Xceed
+- 0032 - Process-scoped semaphore locks for cross-request workflows
+- 0033 - WCF/SOAP service references (ClientBase, BasicHttpBinding)
+- 0034 - XML import/export parsing with XmlSerializer/XmlDocument
+- 0035 - XLSX report generation and PDF conversion via Fast.Common.Spreadsheets
+- 0036 - jQuery DataTables param parsing and grid serialization in repos/services
+- 0037 - Stringly-typed request parameter bags (Dictionary<string, string>)
+- 0038 - Context-based service locator (GetRequiredService / ServiceProviderHelper)
+- 0039 - FVDataContextFactory global registries and user cache
+- 0040 - Zip archive creation and download of server-side directories
+- 0041 - ContextDictionary ambient output and parameter injection
+- 0042 - DynamicModel/Massive direct database access in controllers
+- 0043 - FastScreenBuilder grid/table UI composition in ViewData
+- 0044 - ServiceAttribute reflection-based dispatch (FVLoad service routing)
+- 0045 - Reflection-based value injection (ValueInjectHelper/InjectFrom)
+- 0046 - Legacy ASP.NET Membership/Identity provider usage
+- 0047 - Custom MVC model binder reads Request.Form for multi-select
+- 0048 - FVLoad request multiplexer and dynamic view/service dispatch
+- 0049 - HttpContext.Items used as ambient request state bus
+- 0050 - ValidationException-driven UI error pipeline
+- 0051 - Telerik Reporting report pipeline and designer assets
+- 0052 - CopSync citation import pipeline (SOAP + XML cleanup + dynamic mapping)
+- 0053 - System ActionSet dynamic multi-action dispatch and docx merge
+- 0054 - Time-queue job scheduling with persisted job entities
+- 0055 - PrintDocument queue + signature/attachment pipeline
+- 0056 - Dynamic SelectList/Select2 pipeline (config JSON + SQL builder + reflection)
+- 0057 - SqlClient compatibility layer for DbCommand + BulkCopy
+- 0058 - Legacy CSV/XLSX import/export pipeline (stringly-typed rows + file staging)
+- 0059 - SystemTemplate search-criteria JSON pipeline (template providers + DB persistence)
+- 0060 - LiveGrid inline editing pipeline (HTML inputs + data-updated AJAX)
+- 0061 - JsonWrapper JSON payload transport (implicit string conversions)
+- 0062 - Conversion tooling and vendor schema mapping (CSV/XLSX caches + validation outputs)
+- 0063 - Database admin and schema manipulation helpers (backup/restore/drop constraints)
+- 0064 - GlobalDictionaries reflection-based table metadata cache
+- 0065 - Async event JSON payloads with TypeNameHandling + runtime dispatch
+- 0066 - SSN encryption/decryption via DPAPI + DataProtection fallback
+- 0067 - Ambient principal lookup via HttpContext.Current + Thread.CurrentPrincipal
+- 0068 - Signature tablet capture via SigWebTablet (biometric + base64 image)
+- 0069 - FVFile base64 file response format (filename//contentType\base64)
+- 0070 - MVC controllers direct LINQ-to-SQL DataContext access
+- 0071 - FundViewResult server-rendered HTML in JSON responses
+- 0072 - Global exception filter routes to ErrorController (HTTP 200 + JSON errors)
+- 0073 - DataFv UI action protocol (data-fv JSON command bus)
+- 0074 - Legacy namespace coupling in Fast.* assemblies (FundView.Mvc.UI)
+- 0075 - Service layer reads Request.Params/Files (implicit request binding)
+- 0076 - User Defined Data (UDD) dynamic field pipeline
+- 0077 - RequestFormat/Redraw dual-response mode
+- 0078 - Jira incident creation via curl + local file spool
+- 0079 - Custom MVC binder/validation overrides (decimal/guid + implicit required off)
+- 0080 - ExcludeAllModelBinder on grid ViewData
+- 0081 - Custom MVC client validation attributes + JS adapters
+- 0082 - Dynamic schedule configuration assembly generation
+- 0083 - Reflection-based dynamic type instantiation
+- 0084 - ViewData persistence + FVLoad request rewrite
+- 0085 - Parallel.ForEach helper conversions and data hydration
+- 0086 - JSON ActionFilter reads Request.InputStream for parameter binding
+- 0087 - Print document user-queue cancellation gate
+- 0088 - Razor view role gating via User.IsInRole/Permissions.IsInRole
