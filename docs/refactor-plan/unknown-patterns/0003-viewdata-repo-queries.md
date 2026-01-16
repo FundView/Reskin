@@ -1,0 +1,136 @@
+# 0003 - ViewData Models Performing Repo Queries
+
+- Pattern label: MVC `*ViewData` models call `*Repo` static methods to load data.
+- Service/controller: `FundViewGit/FundView.MVC4.UI/Areas/Dashboard/Models/Main/MainDashboardIndexViewData.cs`.
+- Difference summary (vs known playbooks): GL/AP playbook expects MVC services to orchestrate data access and delegate logic to helper services; here the ViewData layer performs repository queries directly, mixing UI model construction with data access and business rules.
+- Search results (other occurrences, paths): 124 ViewData files in `FundViewGit/FundView.MVC4.UI/Areas/**/Models/**`.
+- Candidate solutions (core boundary, adapter shape, tests):
+- Move data-fetching logic into helper/query services in `Fast.FundView.<Module>.Services` and keep ViewData as a pure DTO.
+- Add a view-model factory in the adapter layer (legacy MVC and new services) to construct ViewData from core outputs.
+- Write characterization tests around the ViewData factory outputs (serialized data and derived fields) before refactor.
+
+Search results list
+- `FundViewGit/FundView.MVC4.UI/Areas/AccountsPayable/Models/APPayment/APPaymentPrintViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/AccountsPayable/Models/APVendor/APVendorEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPContractorType/BPContractorTypeEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPFastPermits/BPFastPermitsEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPFee/BPFeeEditRateTableViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPFee/BPFeeEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPFeeCalcInput/BPFeeCalcInputEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPInspection/BPInspectionEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPInspector/BPInspectorEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPPermit/BPPermitEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProject/BPProjectDetailsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProject/BPProjectEditNumberViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProject/BPProjectEditPermitNumberViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProject/BPProjectEditPermitViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProject/BPProjectEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProject/BPProjectIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitDepositTransferPopUpViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitEditFeeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitEditInspectionViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitEditTakeAPaymentViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectPermit/BPProjectPermitIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPProjectTemplate/BPProjectTemplateEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Models/BPSetup/BPSetupEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Models/ReceiptingBatch/ReceiptingBatchEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Models/ReceiptingBatch/ReceiptingBatchPostingIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Models/ReceiptingPostingBatch/ReceiptingPostingBatchEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Models/ReceiptingSetup/ReceiptingSetupEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Models/CEOfficer/CEOfficerEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Models/CEViolation/CEViolationCEViolationDocDetailViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/Dashboard/Models/Main/MainDashboardIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/Dashboard/Models/Main/MainEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Models/GLChartOfAccountsReport/GLChartOfAccountsReportIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Models/GLDepartment/GLDepartmentChangeNumberViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Models/GLFiscalYear/GLFiscalYearInitializeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Models/GLSetup/GLSetupIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtAgencyOfficer/CourtAgencyOfficerEditAgencyViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtAgencyOfficer/CourtAgencyOfficerEditOfficerViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtAttorney/CourtAttorneyEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtBondCompany/CourtBondCompanyEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCaseManagement/CourtCaseManagementCreateFTAViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCaseManagement/CourtCaseManagementEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitation/CourtCitationCitationSummaryViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitation/CourtCitationCreateViolationViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitation/CourtCitationEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitation/CourtCitationIndexViolationSubGridViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitation/CourtCitationNotificationSettingsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitation/CourtCitationVoidCitationMessageViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitationImport/CourtCitationImportConsoleMainViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitationImport/CourtCitationImportImportedGroupsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitationImportGroup/CourtCitationImportGroupBrowseImportScreenViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitationImportGroup/CourtCitationImportGroupCreateViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitationImportGroup/CourtCitationImportGroupIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtCitationImportGroup/CourtCitationImportGroupReviewGroupViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtComplianceRequirement/CourtComplianceRequirementEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtDocket/CourtDocketEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtDocket/CourtDocketPrintViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtFee/CourtFeeEditProportionViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtFee/CourtFeeEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtGeneralSetup/CourtGeneralSetupEditCourtMaintenanceCitationImportTabViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtGeneralSetup/CourtGeneralSetupEditCourtMaintenanceContactTabViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtGeneralSetup/CourtGeneralSetupEditCourtMaintenanceMainTabViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtGeneralSetup/CourtGeneralSetupEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtJudge/CourtJudgeEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtJuror/CourtJurorCourtJurorHistoryViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtJuror/CourtJurorEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtMergeOfficer/CourtMergeOfficerMergeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtMergePerson/CourtMergePersonMergeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtPaymentPlan/CourtPaymentPlanCreateViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtPaymentPlan/CourtPaymentPlanEditInstallmentViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtPaymentPlan/CourtPaymentPlanEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtPerson/CourtPersonEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtSpeedingSchedule/CourtSpeedingSchedulePreviewFeesViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityCourtDateAndDecimalSetComboValueViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToBaseWorksheetsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToCourtGeneralSetupViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToCourtSpeedingWorkSheetsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToCourtViolationCodeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToCourtViolationStatusBrowseFilesViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToCourtViolationStatusViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilityMapToSystemGeneralSetupViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilitySelectKeyColumnViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtUtility/CourtUtilitySelectSchemaValueMapMultipleViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtVehicle/CourtVehicleEditCourtVehicleMainTabViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationAppointedAttorneyViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditAdditionalInfoViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditCashBondViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditDocketViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditNonCashBondForfeitRefundPaymentsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditNonCashBondViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditStatusMainViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditStatusViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditViolationFeeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditViolationNonCashPaymentActionSetModalViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditViolationNonCashPaymentViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationEditWarrantDetailsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationViewFinancialSummaryViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationViewViolationNonCashPaymentViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationViewViolationsViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolation/CourtViolationViolationMainViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolationCode/CourtViolationCodeDocumentDetailViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolationCode/CourtViolationCodeEditCourtViolationCodeMainTabViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolationCode/CourtViolationCodePreviewFeesViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolationComplianceRequirement/CourtViolationComplianceRequirementEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolationConsole/CourtViolationConsoleEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolationHistoryReport/CourtViolationHistoryReportIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolator/CourtViolatorEditInstallmentViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolator/CourtViolatorMainViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolator/CourtViolatorPaymentPlanConfigureViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtViolator/CourtViolatorPaymentPlanViolationViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Models/CourtWarrantType/CourtWarrantTypeEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemActionSet/SystemActionSetMCViolationAddFeeViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemActionSet/SystemActionSetMCViolationChangeStatusViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemActionSet/SystemActionSetMCViolationStatusApprovedDDViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemActionSet/SystemActionSetMCViolationStatusApprovedDSCViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemActionSet/SystemActionSetMCViolationStatusContinuanceViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemDocument/SystemDocumentPrintViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemFastGovPayEmailSetup/SystemFastGovPayEmailSetupIndexViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemImport/SystemImportImportErrorViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemProcess/SystemProcessEditCustomParametersViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemProcess/SystemProcessEditEntityViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemProcess/SystemProcessEditViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemProcess/SystemProcessNewSystemProcessTemplateViewData.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Models/SystemUtility/SystemUtilityConversionDashboardViewData.cs`

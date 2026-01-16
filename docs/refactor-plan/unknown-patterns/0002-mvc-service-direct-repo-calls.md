@@ -1,0 +1,95 @@
+# 0002 - MVC Service Direct Repo Calls (No Helper Service)
+
+- Pattern label: MVC Area Service methods call `*Repo` static methods directly (EFModel/Repository) instead of resolving a helper service via context/DI.
+- Service/controller: `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Services/CECaseService.cs`.
+- Difference summary (vs known playbooks): GL/AP playbook expects MVC shims to delegate to helper services (core extraction target). These services frequently call repository statics directly and sometimes embed orchestration logic around repo calls, which bypasses the helper-service boundary and makes extraction less uniform.
+- Search results (other occurrences, paths): 83 service files in `FundViewGit/FundView.MVC4.UI/Areas/**/Services`.
+- Candidate solutions (core boundary, adapter shape, tests):
+- Introduce helper services in `Fast.FundView.<Module>.Services` that wrap repo calls; MVC services resolve helpers via `context.GetRequiredService<T>()` to align with GL/AP playbook.
+- If repo calls are query-only, extract a core query interface and keep the EF6 repo as the adapter implementation.
+- Add characterization tests for service outputs (grid serialization and report data) before moving logic; confirm parity after refactor.
+
+Search results list
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Services/CEViolationService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Services/CEOfficerService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CodeEnforcement/Services/CECaseService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/Dashboard/Services/WhatsNewService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Services/ReceiptingSetupService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Services/ReceiptingSequentialNumberService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Services/ReceiptingPostingBatchService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/CashReceipting/Services/ReceiptingBatchService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtMergeOfficerService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/OCAAppointmentAndFeesReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtLexisNexisService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtZipCodeAutocompleteService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtJurorService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtWarrantViewService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtJurorHistoryService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtWarrantTypeService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtJudgeService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtWarrantService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtGeneralSetupService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtWarrantReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtGASB34ReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolatorHistoryReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtFTAReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationSummaryReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtFeeService .cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtFeesAndFinesReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtDocketService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationHistoryReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtDocketReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationFeeEditorService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtComplianceRequirementService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationConsoleService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCollectionReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationComplianceRequirementService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCitationService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCitationReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtViolationCodeService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCitationImportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtVehicleService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtUtilityService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtCaseManagementService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtBondReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtTransactionService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtBondCompanyService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtSpeedingScheduleService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtAttorneyService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtReverseMiscellaneousCreditService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtAgencyService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtPersonService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtAgencyOfficerService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtPaymentPlanService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtPaymentPlanReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtOmniClearanceGroupService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtOfficerService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtOfficerReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtOCAReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/MunicipalCourt/Services/CourtMergePersonService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/AccountsPayable/Services/APInvoiceService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemActionSetService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPFeeService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPTransactionService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPPropertyReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPFeeCalcInputService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPProjectTemplateService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPProjectService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPContractorTypeService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPContractorService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPProjectPermitService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemBankStatementService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPProjectPermitPhaseInspectionService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPContractorConsoleService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPProjectPermitFeeService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPPermitService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemContactService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPInspectorService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPInspectionService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/BuildingPermit/Services/BPInspectionSchedulingConsoleService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemDocumentService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/SystemSetup/Services/SystemUtilityService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Services/GLBudgetAdjustmentService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Services/GLFinancialStatementReportService.cs`
+- `FundViewGit/FundView.MVC4.UI/Areas/GeneralLedger/Services/GLYearEndAccountBalance/GLYearEndAccountBalanceService.cs`

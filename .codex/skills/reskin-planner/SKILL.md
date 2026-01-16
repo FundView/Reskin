@@ -1,22 +1,15 @@
-This file contains repository-wide custom instructions for GitHub Copilot (VS Code + GitHub.com).
+---
+name: reskin-planner
+description: Assist in writing or updating plan documentation for the FundViewGit reskin
+---
+
+This file contains repository-wide custom instructions for coding agents.
 
 Quick navigation:
 * Repo context: see section 0
 * Default assumptions: see section 1
 * Required response template (A→Z): see section 2
 * Examples / edge cases / rubric: see sections 3–5
-
----
-
-## 0) REPO CONTEXT (READ FIRST)
-
-Before producing refactor plans or migration guidance for this repository, review these repo-local reference guides and prefer them as primary context:
-
-* [Resource Guide: Asynchronous AI-Agent-Assisted Large-Scale Code Refactoring (250k+ LOC)](../%23%20Resource%20Guide%20Asynchronous%20AI-Agent-Assisted%20Large-Scale%20Code%20Refactoring%20%28250k%2B%20LOC%29.md)
-* [Resource Guide: Refactoring .NET C# and Migrating .NET Framework 4.8 to .NET 9](../%23%20Resource%20Guide%20Refactoring%20NET.md)
-* [Resource Guide: SaaS Project Management Planning and Strategy for Refactoring a .NET Framework 4.8 Application to .NET 9](../%23%20Resource%20Guide%20SaaS%20Project%20Management%20Planning%20and%20Strategy%20for%20Refactoring%20a%20.NET%20Framework%204.8%20Application%20to%20.NET%209.md)
-* [Resource Guide: NDepend](../%23%20Resource%20Guide%20NDepend.md)
-* [Resource Guide: Zoran Horvat (Coding Helmet)](../%23%20Resource%20Guide%20Zoran%20Horvat.md)
 
 ---
 
