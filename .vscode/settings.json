@@ -1,5 +1,5 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "git -C \"c:\\Code\\Reskin\"": true
+        "git -C \"${workspaceFolder}\"": true
     }
 }
